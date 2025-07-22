@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title>Baccarat Ask Simulator</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <h1>🎯 Baccarat Ask Simulator</h1>
+    <div class="section">
+        <label>ผลล่าสุด:</label>
+        <button onclick="setResult('P')">P</button>
+        <button onclick="setResult('B')">B</button>
+    </div>
+    <div class="section">
+        <label>เค้ารอง (Big Eye / Small / Cockroach):</label>
+        <select id="bigEye"><option>🔵</option><option>🔴</option></select>
+        <select id="small"><option>🔵</option><option>🔴</option></select>
+        <select id="cockroach"><option>🔵</option><option>🔴</option></select>
+    </div>
+    <div class="section">
+        <button onclick="analyzeAsk()">วิเคราะห์ Ask</button>
+        <button onclick="resetAll()">รีเซต</button>
+    </div>
+    <div id="output" class="section"></div>
+    <script src="script.js"></script>
+</body>
+</html>
