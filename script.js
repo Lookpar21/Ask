@@ -11,16 +11,46 @@ function analyzeAsk() {
     const small = document.getElementById('small').value;
     const cockroach = document.getElementById('cockroach').value;
 
-    // บันทึกข้อมูลในตาราง
+    // จำลอง Ask ล่วงหน้า
+    const pAsk = [randDot(), randDot(), randDot()];
+    const bAsk = [randDot(), randDot(), randDot()];
+
+    const scoreP = pAsk.filter(dot => dot === '🔵').length;
+    const scoreB = bAsk.filter(dot => dot === '🔵').length;
+
+    let suggestion = '';
+    if (scoreP > scoreB) {
+        suggestion = `🎯 <b>แนะนำ: แทง P (P Ask)</b>`;
+    } else if (scoreB > scoreP) {
+        suggestion = `🎯 <b>แนะนำ: แทง B (B Ask)</b>`;
+    } else {
+        suggestion = `⚠️ เค้าใกล้เคียงกัน รอดู 1 ตา`;
+    }
+
     const current = {
         result: lastResult,
-        big, small, cockroach
+        big,
+        small,
+        cockroach,
+        pAsk,
+        bAsk,
+        suggestion
     };
 
     history.unshift(current); // เพิ่มรายการใหม่ไว้ด้านบน
 
     updateTable();
     updateStats();
+    showAskResult(pAsk, bAsk, suggestion);
+}
+
+function showAskResult(pAsk, bAsk, suggestion) {
+    let html = `<h2>📊 จำลองผลล่วงหน้า</h2>`;
+    html += `P Ask: ${pAsk.join(' ')}<br>`;
+    html += `B Ask: ${bAsk.join(' ')}<br><br>`;
+    html += suggestion;
+
+    document.getElementById('output').innerHTML = html;
 }
 
 function updateTable() {
@@ -28,11 +58,10 @@ function updateTable() {
     tbody.innerHTML = '';
 
     history.forEach((item, index) => {
-        const row = document.createElement('tr');
-
         const combo = item.big + item.small + item.cockroach;
         const stats = countStats(combo);
 
+        const row = document.createElement('tr');
         row.innerHTML = `
             <td>${index + 1}</td>
             <td>${item.result || '-'}</td>
@@ -41,7 +70,6 @@ function updateTable() {
             <td>${item.cockroach}</td>
             <td>P=${stats.P} / B=${stats.B}</td>
         `;
-
         tbody.appendChild(row);
     });
 }
@@ -70,6 +98,10 @@ function countStats(combo) {
         }
     });
     return count;
+}
+
+function randDot() {
+    return Math.random() > 0.5 ? '🔵' : '🔴';
 }
 
 function resetAll() {
