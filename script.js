@@ -11,7 +11,6 @@ function analyzeAsk() {
     const small = document.getElementById('small').value;
     const cockroach = document.getElementById('cockroach').value;
 
-    // จำลอง Ask ล่วงหน้า
     const pAsk = [randDot(), randDot(), randDot()];
     const bAsk = [randDot(), randDot(), randDot()];
 
@@ -20,11 +19,11 @@ function analyzeAsk() {
 
     let suggestion = '';
     if (scoreP > scoreB) {
-        suggestion = `🎯 <b>แนะนำ: แทง P (P Ask)</b>`;
+        suggestion = `🎯 แทง P (P Ask)`;
     } else if (scoreB > scoreP) {
-        suggestion = `🎯 <b>แนะนำ: แทง B (B Ask)</b>`;
+        suggestion = `🎯 แทง B (B Ask)`;
     } else {
-        suggestion = `⚠️ เค้าใกล้เคียงกัน รอดู 1 ตา`;
+        suggestion = `⚠️ เค้าใกล้เคียงกัน`;
     }
 
     const current = {
@@ -37,8 +36,7 @@ function analyzeAsk() {
         suggestion
     };
 
-    history.unshift(current); // เพิ่มรายการใหม่ไว้ด้านบน
-
+    history.unshift(current);
     updateTable();
     updateStats();
     showAskResult(pAsk, bAsk, suggestion);
@@ -48,7 +46,7 @@ function showAskResult(pAsk, bAsk, suggestion) {
     let html = `<h2>📊 จำลองผลล่วงหน้า</h2>`;
     html += `P Ask: ${pAsk.join(' ')}<br>`;
     html += `B Ask: ${bAsk.join(' ')}<br><br>`;
-    html += suggestion;
+    html += `<b>${suggestion}</b>`;
 
     document.getElementById('output').innerHTML = html;
 }
@@ -68,6 +66,9 @@ function updateTable() {
             <td>${item.big}</td>
             <td>${item.small}</td>
             <td>${item.cockroach}</td>
+            <td>${item.pAsk.join(' ')}</td>
+            <td>${item.bAsk.join(' ')}</td>
+            <td>${item.suggestion}</td>
             <td>P=${stats.P} / B=${stats.B}</td>
         `;
         tbody.appendChild(row);
