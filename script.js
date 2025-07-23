@@ -1,16 +1,22 @@
 let lastResult = '';
 let history = [];
 
+let bigEyeValue = '';
+let smallValue = '';
+let cockroachValue = '';
+
 function setResult(value) {
     lastResult = value;
     document.getElementById('output').innerHTML = 'ผลล่าสุด: ' + value;
 }
 
-function analyzeAsk() {
-    const big = document.getElementById('bigEye').value;
-    const small = document.getElementById('small').value;
-    const cockroach = document.getElementById('cockroach').value;
+function setEye(road, value) {
+    if (road === 'big') bigEyeValue = value;
+    if (road === 'small') smallValue = value;
+    if (road === 'cockroach') cockroachValue = value;
+}
 
+function analyzeAsk() {
     const pAsk = [randDot(), randDot(), randDot()];
     const bAsk = [randDot(), randDot(), randDot()];
 
@@ -28,9 +34,9 @@ function analyzeAsk() {
 
     const current = {
         result: lastResult,
-        big,
-        small,
-        cockroach,
+        big: bigEyeValue,
+        small: smallValue,
+        cockroach: cockroachValue,
         pAsk,
         bAsk,
         suggestion
@@ -40,6 +46,9 @@ function analyzeAsk() {
     updateTable();
     updateStats();
     showAskResult(pAsk, bAsk, suggestion);
+
+    // Reset visually
+    document.getElementById('output').innerHTML = '';
 }
 
 function showAskResult(pAsk, bAsk, suggestion) {
