@@ -47,7 +47,6 @@ function showAskResult(pAsk, bAsk, suggestion) {
     html += `P Ask: ${pAsk.join(' ')}<br>`;
     html += `B Ask: ${bAsk.join(' ')}<br><br>`;
     html += `<b>${suggestion}</b>`;
-
     document.getElementById('output').innerHTML = html;
 }
 
@@ -57,7 +56,7 @@ function updateTable() {
 
     history.forEach((item, index) => {
         const combo = item.big + item.small + item.cockroach;
-        const stats = countStats(combo);
+        const stats = countNextStats(combo, index); // ใช้ผลถัดไปแทน
 
         const row = document.createElement('tr');
         row.innerHTML = `
@@ -70,34 +69,37 @@ function updateTable() {
             <td>${item.bAsk.join(' ')}</td>
             <td>${item.suggestion}</td>
             <td>P=${stats.P} / B=${stats.B}</td>
+            <td><button onclick="removeItem(${index})">ลบ</button></td>
         `;
         tbody.appendChild(row);
     });
 }
 
 function updateStats() {
-    if (history.length === 0) {
+    if (history.length < 2) {
         document.getElementById('statsOutput').innerHTML = 'ไม่มีข้อมูล';
         return;
     }
 
     const latest = history[0];
     const combo = latest.big + latest.small + latest.cockroach;
-    const stats = countStats(combo);
+    const stats = countNextStats(combo, 0);
 
     let html = `<b>เค้ารอง:</b> ${combo} <br>`;
-    html += `<b>เคยออก:</b> P = ${stats.P} / B = ${stats.B}`;
+    html += `<b>ผลถัดไปที่เคยออก:</b> P = ${stats.P} / B = ${stats.B}`;
     document.getElementById('statsOutput').innerHTML = html;
 }
 
-function countStats(combo) {
+function countNextStats(combo, startIndex = 0) {
     let count = { P: 0, B: 0 };
-    history.forEach(item => {
+    for (let i = startIndex; i < history.length - 1; i++) {
+        const item = history[i];
+        const nextItem = history[i + 1];
         if (item.big + item.small + item.cockroach === combo) {
-            if (item.result === 'P') count.P++;
-            else if (item.result === 'B') count.B++;
+            if (nextItem.result === 'P') count.P++;
+            else if (nextItem.result === 'B') count.B++;
         }
-    });
+    }
     return count;
 }
 
@@ -111,4 +113,18 @@ function resetAll() {
     document.getElementById('output').innerHTML = '';
     document.getElementById('historyBody').innerHTML = '';
     document.getElementById('statsOutput').innerHTML = '';
+}
+
+// ✅ ใหม่: ปุ่มเริ่มรอบใหม่
+function newSession() {
+    history = [];
+    document.getElementById('historyBody').innerHTML = '';
+    document.getElementById('statsOutput').innerHTML = 'ไม่มีข้อมูล';
+}
+
+// ✅ ใหม่: ลบข้อมูลเฉพาะรายการ
+function removeItem(index) {
+    history.splice(index, 1);
+    updateTable();
+    updateStats();
 }
