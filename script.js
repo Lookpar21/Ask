@@ -54,65 +54,50 @@ function updateTable() {
     const tbody = document.getElementById('historyBody');
     tbody.innerHTML = '';
 
-    for (let i = 0; i < history.length; i++) {
-        const item = history[i];
-
-        if (item === 'divider') {
-            const dividerRow = document.createElement('tr');
-            dividerRow.innerHTML = `<td colspan="10" style="text-align:center; background:#222; color:#fff;">-- เริ่มรอบใหม่ --</td>`;
-            tbody.appendChild(dividerRow);
-            continue;
-        }
-
-        const next = history[i + 1] || {};
-        const combo = next.big + next.small + next.cockroach;
-        const stats = countNextStats(combo);
+    history.forEach((item, index) => {
+        const combo = item.big + item.small + item.cockroach;
+        const stats = countNextStats(combo, index); // ใช้ผลถัดไปแทน
 
         const row = document.createElement('tr');
         row.innerHTML = `
-            <td>${i + 1}</td>
+            <td>${index + 1}</td>
             <td>${item.result || '-'}</td>
-            <td>${next.big || '-'}</td>
-            <td>${next.small || '-'}</td>
-            <td>${next.cockroach || '-'}</td>
+            <td>${item.big}</td>
+            <td>${item.small}</td>
+            <td>${item.cockroach}</td>
             <td>${item.pAsk.join(' ')}</td>
             <td>${item.bAsk.join(' ')}</td>
             <td>${item.suggestion}</td>
             <td>P=${stats.P} / B=${stats.B}</td>
-            <td><button onclick="removeItem(${i})">ลบ</button></td>
+            <td><button onclick="removeItem(${index})">ลบ</button></td>
         `;
         tbody.appendChild(row);
-    }
+    });
 }
 
 function updateStats() {
-    let lastValid = history.find(item => item !== 'divider');
-    if (!lastValid) {
+    if (history.length < 2) {
         document.getElementById('statsOutput').innerHTML = 'ไม่มีข้อมูล';
         return;
     }
 
-    const next = history[history.indexOf(lastValid) + 1];
-    const combo = next?.big + next?.small + next?.cockroach || '';
-    const stats = countNextStats(combo);
+    const latest = history[0];
+    const combo = latest.big + latest.small + latest.cockroach;
+    const stats = countNextStats(combo, 0);
 
     let html = `<b>เค้ารอง:</b> ${combo} <br>`;
     html += `<b>ผลถัดไปที่เคยออก:</b> P = ${stats.P} / B = ${stats.B}`;
     document.getElementById('statsOutput').innerHTML = html;
 }
 
-function countNextStats(combo) {
+function countNextStats(combo, startIndex = 0) {
     let count = { P: 0, B: 0 };
-    for (let i = 0; i < history.length - 1; i++) {
+    for (let i = startIndex; i < history.length - 1; i++) {
         const item = history[i];
-        const next = history[i + 1];
-
-        if (item === 'divider' || next === 'divider') continue;
-
-        const nextCombo = next.big + next.small + next.cockroach;
-        if (nextCombo === combo) {
-            if (item.result === 'P') count.P++;
-            else if (item.result === 'B') count.B++;
+        const nextItem = history[i + 1];
+        if (item.big + item.small + item.cockroach === combo) {
+            if (nextItem.result === 'P') count.P++;
+            else if (nextItem.result === 'B') count.B++;
         }
     }
     return count;
@@ -130,12 +115,14 @@ function resetAll() {
     document.getElementById('statsOutput').innerHTML = '';
 }
 
+// ✅ ใหม่: ปุ่มเริ่มรอบใหม่
 function newSession() {
-    history.unshift('divider');
-    updateTable();
-    updateStats();
+    history = [];
+    document.getElementById('historyBody').innerHTML = '';
+    document.getElementById('statsOutput').innerHTML = 'ไม่มีข้อมูล';
 }
 
+// ✅ ใหม่: ลบข้อมูลเฉพาะรายการ
 function removeItem(index) {
     history.splice(index, 1);
     updateTable();
