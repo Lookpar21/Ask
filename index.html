@@ -26,7 +26,8 @@
 
     <div class="section">
         <button onclick="analyzeAsk()">วิเคราะห์ Ask</button>
-        <button onclick="resetAll()">รีเซต</button>
+        <button onclick="newSession()">เริ่มรอบใหม่</button> <!-- ✅ เพิ่ม -->
+        <button onclick="resetAll()">รีเซตทั้งหมด</button>
     </div>
 
     <div class="section">
@@ -53,6 +54,7 @@
                     <th>B Ask</th>
                     <th>แนะนำ</th>
                     <th>สถิติเคยออก</th>
+                    <th>ลบ</th> <!-- ✅ เพิ่มคอลัมน์ลบ -->
                 </tr>
             </thead>
             <tbody id="historyBody"></tbody>
