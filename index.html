@@ -7,22 +7,50 @@
 </head>
 <body>
     <h1>🎯 Baccarat Ask Simulator</h1>
+
     <div class="section">
         <label>ผลล่าสุด:</label>
         <button onclick="setResult('P')">P</button>
         <button onclick="setResult('B')">B</button>
     </div>
+
     <div class="section">
-        <label>เค้ารอง (Big Eye / Small / Cockroach):</label>
+        <label>เค้ารอง:</label><br>
+        Big Eye: 
         <select id="bigEye"><option>🔵</option><option>🔴</option></select>
+        Small: 
         <select id="small"><option>🔵</option><option>🔴</option></select>
+        Cockroach: 
         <select id="cockroach"><option>🔵</option><option>🔴</option></select>
     </div>
+
     <div class="section">
         <button onclick="analyzeAsk()">วิเคราะห์ Ask</button>
         <button onclick="resetAll()">รีเซต</button>
     </div>
-    <div id="output" class="section"></div>
+
+    <div class="section">
+        <h3>📊 สถิติตามเค้ารอง</h3>
+        <div id="statsOutput"></div>
+    </div>
+
+    <div class="section">
+        <h3>📋 ประวัติย้อนหลัง</h3>
+        <table border="1" style="width:100%; text-align:center;">
+            <thead>
+                <tr>
+                    <th>ตา</th>
+                    <th>ผลจริง</th>
+                    <th>เค้า1</th>
+                    <th>เค้า2</th>
+                    <th>เค้า3</th>
+                    <th>สถิติเคยออก</th>
+                </tr>
+            </thead>
+            <tbody id="historyBody"></tbody>
+        </table>
+    </div>
+
     <script src="script.js"></script>
 </body>
 </html>
