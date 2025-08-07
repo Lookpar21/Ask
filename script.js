@@ -11,12 +11,17 @@ function analyzeAsk() {
     const small = document.getElementById('small').value;
     const cockroach = document.getElementById('cockroach').value;
 
-    // จำลองเค้ารองหากผลลัพธ์ต่อไปคือ P หรือ B
-    const statsIfP = countNextStatsIfAdded('P');
-    const statsIfB = countNextStatsIfAdded('B');
+    const pAsk = [
+        document.getElementById('pAsk0').value,
+        document.getElementById('pAsk1').value,
+        document.getElementById('pAsk2').value
+    ];
 
-    const pAsk = generateDotsFromStats(statsIfP);
-    const bAsk = generateDotsFromStats(statsIfB);
+    const bAsk = [
+        document.getElementById('bAsk0').value,
+        document.getElementById('bAsk1').value,
+        document.getElementById('bAsk2').value
+    ];
 
     const scoreP = pAsk.filter(dot => dot === '🔵').length;
     const scoreB = bAsk.filter(dot => dot === '🔵').length;
@@ -44,42 +49,6 @@ function analyzeAsk() {
     updateTable();
     updateStats();
     showAskResult(pAsk, bAsk, suggestion);
-}
-
-function countNextStatsIfAdded(simulatedResult) {
-    // จำลองว่าเพิ่ม P หรือ B แล้วจะเกิดเค้าอะไร
-    let simulatedHistory = [...history];
-    simulatedHistory.unshift({
-        result: simulatedResult,
-        big: '', small: '', cockroach: ''
-    });
-
-    const results = simulatedHistory.map(h => h.result);
-    const big = getLastN(results, 2).join('');
-    const small = getLastN(results, 3).join('');
-    const cockroach = getLastN(results, 4).join('');
-
-    return { big, small, cockroach };
-}
-
-function getLastN(arr, n) {
-    return arr.slice(0, n);
-}
-
-function generateDotsFromStats(stats) {
-    const base = history[0];
-    let dots = [];
-
-    if (!base) {
-        // ยังไม่มีประวัติ ให้สุ่ม
-        dots = ['🔴', '🔴', '🔴'];
-    } else {
-        dots.push(stats.big === base.big ? '🔵' : '🔴');
-        dots.push(stats.small === base.small ? '🔵' : '🔴');
-        dots.push(stats.cockroach === base.cockroach ? '🔵' : '🔴');
-    }
-
-    return dots;
 }
 
 function showAskResult(pAsk, bAsk, suggestion) {
