@@ -11,8 +11,12 @@ function analyzeAsk() {
     const small = document.getElementById('small').value;
     const cockroach = document.getElementById('cockroach').value;
 
-    const pAsk = [randDot(), randDot(), randDot()];
-    const bAsk = [randDot(), randDot(), randDot()];
+    // จำลองเค้ารองหากผลลัพธ์ต่อไปคือ P หรือ B
+    const statsIfP = countNextStatsIfAdded('P');
+    const statsIfB = countNextStatsIfAdded('B');
+
+    const pAsk = generateDotsFromStats(statsIfP);
+    const bAsk = generateDotsFromStats(statsIfB);
 
     const scoreP = pAsk.filter(dot => dot === '🔵').length;
     const scoreB = bAsk.filter(dot => dot === '🔵').length;
@@ -42,6 +46,42 @@ function analyzeAsk() {
     showAskResult(pAsk, bAsk, suggestion);
 }
 
+function countNextStatsIfAdded(simulatedResult) {
+    // จำลองว่าเพิ่ม P หรือ B แล้วจะเกิดเค้าอะไร
+    let simulatedHistory = [...history];
+    simulatedHistory.unshift({
+        result: simulatedResult,
+        big: '', small: '', cockroach: ''
+    });
+
+    const results = simulatedHistory.map(h => h.result);
+    const big = getLastN(results, 2).join('');
+    const small = getLastN(results, 3).join('');
+    const cockroach = getLastN(results, 4).join('');
+
+    return { big, small, cockroach };
+}
+
+function getLastN(arr, n) {
+    return arr.slice(0, n);
+}
+
+function generateDotsFromStats(stats) {
+    const base = history[0];
+    let dots = [];
+
+    if (!base) {
+        // ยังไม่มีประวัติ ให้สุ่ม
+        dots = ['🔴', '🔴', '🔴'];
+    } else {
+        dots.push(stats.big === base.big ? '🔵' : '🔴');
+        dots.push(stats.small === base.small ? '🔵' : '🔴');
+        dots.push(stats.cockroach === base.cockroach ? '🔵' : '🔴');
+    }
+
+    return dots;
+}
+
 function showAskResult(pAsk, bAsk, suggestion) {
     let html = `<h2>📊 จำลองผลล่วงหน้า</h2>`;
     html += `P Ask: ${pAsk.join(' ')}<br>`;
@@ -56,7 +96,7 @@ function updateTable() {
 
     history.forEach((item, index) => {
         const combo = item.big + item.small + item.cockroach;
-        const stats = countNextStats(combo, index); // ใช้ผลถัดไปแทน
+        const stats = countNextStats(combo, index);
 
         const row = document.createElement('tr');
         row.innerHTML = `
@@ -103,10 +143,6 @@ function countNextStats(combo, startIndex = 0) {
     return count;
 }
 
-function randDot() {
-    return Math.random() > 0.5 ? '🔵' : '🔴';
-}
-
 function resetAll() {
     lastResult = '';
     history = [];
@@ -115,14 +151,12 @@ function resetAll() {
     document.getElementById('statsOutput').innerHTML = '';
 }
 
-// ✅ ใหม่: ปุ่มเริ่มรอบใหม่
 function newSession() {
     history = [];
     document.getElementById('historyBody').innerHTML = '';
     document.getElementById('statsOutput').innerHTML = 'ไม่มีข้อมูล';
 }
 
-// ✅ ใหม่: ลบข้อมูลเฉพาะรายการ
 function removeItem(index) {
     history.splice(index, 1);
     updateTable();
